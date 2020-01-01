@@ -103,7 +103,7 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 	id := vars["id"]
 
 	if err := model.Remove(id); err != nil {
-		response(w, http.StatusBadRequest, "Invalid request payload")
+		response(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

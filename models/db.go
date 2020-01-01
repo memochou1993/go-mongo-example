@@ -9,7 +9,7 @@ import (
 
 const (
 	host     = "localhost:27017"
-	source   = "movies"
+	source   = ""
 	username = ""
 	password = ""
 )
