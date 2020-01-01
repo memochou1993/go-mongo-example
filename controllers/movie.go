@@ -42,14 +42,14 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	result, err := model.FindByID(id)
+	movie, err := model.FindByID(id)
 
 	if err != nil {
 		response(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	response(w, http.StatusOK, result)
+	response(w, http.StatusOK, movie)
 }
 
 // Store store a newly created resource in storage.
