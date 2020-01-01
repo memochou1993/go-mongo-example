@@ -1,6 +1,8 @@
 package models
 
-import "github.com/globalsign/mgo/bson"
+import (
+	"github.com/globalsign/mgo/bson"
+)
 
 // Movie struct
 type Movie struct {
@@ -26,7 +28,7 @@ func (m *Movie) FindAll() ([]Movie, error) {
 // FindByID will find a movie by ID.
 func (m *Movie) FindByID(id string) (Movie, error) {
 	var movie Movie
-	err := FindOne(db, collection, bson.M{"_id": bson.ObjectIdHex(id)}, nil, &movie)
+	err := FindByID(db, collection, id, &movie)
 
 	return movie, err
 }
@@ -38,10 +40,10 @@ func (m *Movie) Store(movie Movie) error {
 
 // Update will update a movie.
 func (m *Movie) Update(id string, movie Movie) error {
-	return UpdateByID(db, collection, bson.ObjectIdHex(id), movie)
+	return UpdateByID(db, collection, id, movie)
 }
 
 // Remove will remove a movie.
 func (m *Movie) Remove(id string) error {
-	return RemoveByID(db, collection, bson.ObjectIdHex(id))
+	return RemoveByID(db, collection, id)
 }

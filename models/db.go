@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 	password = ""
 )
 
-var globalS *mgo.Session
+var session *mgo.Session
 
 func init() {
 	dialInfo := &mgo.DialInfo{
@@ -28,30 +29,38 @@ func init() {
 		log.Fatalln("Error: ", err)
 	}
 
-	globalS = s
+	session = s
 }
 
 func connect(db string, collection string) (*mgo.Session, *mgo.Collection) {
-	s := globalS.Copy()
+	s := session.Copy()
 	c := s.DB(db).C(collection)
 
 	return s, c
 }
 
 // FindAll will find all resources.
-func FindAll(db string, collection string, query, selector, result interface{}) error {
+func FindAll(db string, collection string, query interface{}, selector interface{}, result interface{}) error {
 	s, c := connect(db, collection)
 	defer s.Close()
 
 	return c.Find(query).Select(selector).All(result)
 }
 
-// FindOne will find a resource.
-func FindOne(db string, collection string, query, selector, result interface{}) error {
+// Find will find a resource.
+func Find(db string, collection string, query interface{}, selector interface{}, result interface{}) error {
 	s, c := connect(db, collection)
 	defer s.Close()
 
 	return c.Find(query).Select(selector).One(result)
+}
+
+// FindByID will find a resource by ID.
+func FindByID(db string, collection string, id string, result interface{}) error {
+	s, c := connect(db, collection)
+	defer s.Close()
+
+	return c.FindId(bson.ObjectIdHex(id)).One(result)
 }
 
 // Insert will insert a resource.
@@ -63,33 +72,33 @@ func Insert(db string, collection string, docs ...interface{}) error {
 }
 
 // Update will update a resource.
-func Update(db string, collection string, query, update interface{}) error {
+func Update(db string, collection string, selector interface{}, update interface{}) error {
 	s, c := connect(db, collection)
 	defer s.Close()
 
-	return c.Update(query, update)
+	return c.Update(selector, update)
 }
 
 // UpdateByID will update a resource By ID.
-func UpdateByID(db string, collection string, id interface{}, update interface{}) error {
+func UpdateByID(db string, collection string, id string, update interface{}) error {
 	s, c := connect(db, collection)
 	defer s.Close()
 
-	return c.UpdateId(id, update)
+	return c.UpdateId(bson.ObjectIdHex(id), update)
 }
 
 // Remove will remove a resource.
-func Remove(db string, collection string, query interface{}) error {
+func Remove(db string, collection string, selector interface{}) error {
 	s, c := connect(db, collection)
 	defer s.Close()
 
-	return c.Remove(query)
+	return c.Remove(selector)
 }
 
 // RemoveByID will remove a resource by ID.
-func RemoveByID(db string, collection string, id interface{}) error {
+func RemoveByID(db string, collection string, id string) error {
 	s, c := connect(db, collection)
 	defer s.Close()
 
-	return c.RemoveId(id)
+	return c.RemoveId(bson.ObjectIdHex(id))
 }
